@@ -46,7 +46,7 @@ def update_messages(body):
     # select all NEW messages relevant to this user
     # a message is NEW if it has been received since the user last checked
     cursor = databaseCon.execute(
-        f"""SELECT groupId,name,content,sender,sentTime from 'USERS IN GROUPS' 
+        f"""SELECT 'GROUP'.groupId,name,content,sender,sentTime from 'USERS IN GROUPS' 
         LEFT JOIN 'GROUP' ON 'USERS IN GROUPS'.groupId = 'GROUP'.groupId 
         LEFT JOIN MESSAGE ON 'USERS IN GROUPS'.groupId = MESSAGE.groupId 
         WHERE username='{username}' AND sentTime >= '{lastUpdate}' 
