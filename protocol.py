@@ -97,7 +97,7 @@ def send_message(body):
     try:
         databaseCon.execute(
             f"""INSERT INTO 'MESSAGE' (content, groupId, sender, sentTime)
-                         VALUES ("{content}","{groupId}","{sender}","{datetime.datetime.now()}")"""
+                         VALUES ("{content}","{groupId}","{sender}","{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}")"""
         )
         databaseCon.commit()
         return "MESSAGE SENT"
