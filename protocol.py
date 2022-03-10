@@ -16,7 +16,7 @@ def create_account(body):
     )
     # try insert user into database
     try:
-        databaseCon.execute(f"INSERT INTO USER VALUES('{username}','{passwordhash}')")
+        databaseCon.execute(f'INSERT INTO USER VALUES("{username}","{passwordhash}")')
         databaseCon.commit()
         return "ACCOUNT CREATED"
     except:
@@ -31,7 +31,7 @@ def login(body):
         sha256(body.get("password").encode()).hexdigest(),
     )
     # check is username and password is valid using hash
-    cursor = databaseCon.execute(f"SELECT * FROM USER WHERE username = '{username}'")
+    cursor = databaseCon.execute(f'SELECT * FROM USER WHERE username = "{username}"')
     record = cursor.fetchone()
     # if valid, get all users messages from db
     if record != None and record[1] == passwordhash:
@@ -49,7 +49,7 @@ def update_messages(body):
         f"""SELECT 'GROUP'.groupId,name,content,sender,sentTime from 'USERS IN GROUPS' 
         LEFT JOIN 'GROUP' ON 'USERS IN GROUPS'.groupId = 'GROUP'.groupId 
         LEFT JOIN MESSAGE ON 'USERS IN GROUPS'.groupId = MESSAGE.groupId 
-        WHERE username='{username}' AND sentTime >= '{lastUpdate}' 
+        WHERE username="{username}" AND (sentTime >= "{lastUpdate}" OR sentTime IS NULL)
         ORDER BY name, sentTime ASC"""
     )
     # construct a "message" dictionary with various fields
@@ -69,7 +69,7 @@ def create_group(body):
     # deconstruct body of request
     name, participants = (body.get("name"), body.get("participants"))
     # insert group into GROUP table
-    databaseCon.execute(f"INSERT INTO 'GROUP' (name) VALUES ('{name}')")
+    databaseCon.execute(f'INSERT INTO "GROUP" (name) VALUES ("{name}")')
     cursor = databaseCon.execute("SELECT last_insert_rowid()")
     # get id of added group
     groupId = cursor.fetchone()[0]
@@ -77,7 +77,7 @@ def create_group(body):
     try:
         for p in participants:
             databaseCon.execute(
-                f"INSERT INTO 'USERS IN GROUPS' VALUES ({groupId},'{p}')"
+                f'INSERT INTO "USERS IN GROUPS" VALUES ({groupId},"{p}")'
             )
         databaseCon.commit()
         return groupId
@@ -97,7 +97,7 @@ def send_message(body):
     try:
         databaseCon.execute(
             f"""INSERT INTO 'MESSAGE' (content, groupId, sender, sentTime)
-                         VALUES ('{content}','{groupId}','{sender}','{datetime.datetime.now()}')"""
+                         VALUES ("{content}","{groupId}","{sender}","{datetime.datetime.now()}")"""
         )
         databaseCon.commit()
         return "MESSAGE SENT"
